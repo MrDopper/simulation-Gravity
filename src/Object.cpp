@@ -16,8 +16,8 @@ Object::Object(std::vector<float> velocity, std::vector<float> position, float r
 // Update the current Position
 void Object::updatePos(float dt)
 {
-    position[0] += acceleration[0] * dt;
-    position[1] += acceleration[1] * dt;
+    velocity[0] += acceleration[0] * dt;
+    velocity[1] += acceleration[1] * dt;
     
     position[0] += velocity[0] * dt;
     position[1] += velocity[1] * dt;
@@ -37,13 +37,22 @@ void Object::drawCircle() const
     }
     glEnd();
 }
+
 void Object::gravitationalForce(const Object& other)
 {
     float dx = other.position[0] - position[0];
     float dy = other.position[1] - position[1];
     //Using pythagorian method to find distance
     float distance = std::sqrt(dx * dx + dy * dy);
+    float inverse_distance = 1.f / distance;
+    //Create vector pointing to the source
+    float normalized_x = inverse_distance * dx;
+    float normalized_y = inverse_distance * dy;
+
+    float inverse_square_dropoff = inverse_distance * inverse_distance;
+
     float a = G * other.mass / distance; // Magnitude force
     this->acceleration[0] += a * dx / distance;
     this->acceleration[1] += a * dy / distance; 
+
 }
